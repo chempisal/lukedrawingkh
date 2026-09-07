@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>កងវិលចាប់ឈ្មោះសិស្សបែបខ្មែរ - Khmer Lucky Student Wheel</title>
+  <meta name="description" content="កម្មវិធីបង្វិលចាប់ឈ្មោះសិស្សដោយចៃដន្យ រចនាប័ទ្មខ្មែរប្រណិត មានសំឡេងនិងចលនាអបអរសាទរ">
+  
+  <!-- Google Fonts for Khmer (Rich collection) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Bayon&family=Dangrek&family=Hanuman:wght@400;700&family=Kantumruy+Pro:ital,wght@0,300..700;1,300..700&family=Koulen&family=Moul&family=Siemreap&display=swap" rel="stylesheet">
+  
+  <!-- SheetJS for reading & exporting Excel (.xlsx, .xls, .csv) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient background glow and traditional decorative borders -->
+  <div class="background-decorations">
+    <div class="glow-spot top-left"></div>
+    <div class="glow-spot bottom-right"></div>
+    <div class="kbach-corner top-left-kbach"></div>
+    <div class="kbach-corner top-right-kbach"></div>
+    <div class="kbach-corner bottom-left-kbach"></div>
+    <div class="kbach-corner bottom-right-kbach"></div>
+  </div>
+
+  <!-- Floating Quick Switch Button: Visible when in Mobile Mode on Desktop -->
+  <button type="button" class="floating-desktop-return-btn" id="btnQuickSwitchDesktop" title="ប្ដូរមកកាន់ទម្រង់កុំព្យូទ័រវិញ">
+    <span class="float-icon">💻</span>
+    <span>ប្ដូរមកទម្រង់កុំព្យូទ័រវិញ</span>
+  </button>
+
+  <div class="app-container">
+    <!-- Phone Status Bar Simulator (Visible in Desktop Mobile-Simulation Mode) -->
+    <div class="mobile-phone-status-bar" id="mobilePhoneStatusBar">
+      <span class="status-time">៩:៤១</span>
+      <div class="status-island">
+        <span class="island-camera"></span>
+      </div>
+      <div class="status-right">
+        <span class="status-icon">📶 5G</span>
+        <span class="status-icon">🔋 100%</span>
+      </div>
+    </div>
+
+    <!-- Header Section -->
+    <header class="app-header">
+      <div class="header-badge">
+        <span class="badge-lotus">☸</span>
+        <span>សាលារៀនកម្ពុជា • កម្មវិធីចាប់រង្វាន់ & ចាប់ឈ្មោះ</span>
+        <span class="badge-lotus">☸</span>
+      </div>
+      <h1 class="main-title">កងវិលចាប់ឈ្មោះសិស្ស</h1>
+      <div class="title-ornament">
+        <span class="ornament-line"></span>
+        <span class="ornament-diamond">❖</span>
+        <span class="ornament-lotus">☸</span>
+        <span class="ornament-diamond">❖</span>
+        <span class="ornament-line"></span>
+      </div>
+      <p class="sub-title">បង្វិលដោយយុត្តិធម៌ រំភើប និងពោរពេញដោយស្នាមញញឹម</p>
+
+      <!-- Quick Controls: Font Selector & View Mode Switcher -->
+      <div class="top-controls-bar">
+        <!-- Font Selector -->
+        <div class="control-pill">
+          <label for="fontSelect" class="bar-label">
+            <span class="bar-icon">🔤</span>
+            <span>ពុម្ពអក្សរ៖</span>
+          </label>
+          <div class="select-wrapper">
+            <select id="fontSelect" class="font-dropdown">
+              <option value="Kantumruy Pro">កន្ទុំរុយ ប្រូ (Kantumruy Pro)</option>
+              <option value="Battambang">បាត់ដំបង (Battambang)</option>
+              <option value="Siemreap">សៀមរាប (Siemreap)</option>
+              <option value="Moul">អក្សរមូល (Moul)</option>
+              <option value="Hanuman">ហនុមាន (Hanuman)</option>
+              <option value="Koulen">គូលែន (Koulen)</option>
+              <option value="Bayon">បាយ័ន (Bayon)</option>
+              <option value="Dangrek">ដងរែក (Dangrek)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Theme Selector (រូបរាងប្រព័ន្ធ ៣៥ ម៉ូដ) -->
+        <div class="control-pill theme-pill-prominent">
+          <button type="button" class="btn-theme-pill" id="btnOpenThemePickerTop" title="ជ្រើសរើសរូបរាងប្រព័ន្ធ (៣៥ ម៉ូដ)">
+            <span class="bar-icon" id="themePillIcon">🎨</span>
+            <span class="bar-label">រូបរាង៖</span>
+            <span class="current-theme-name" id="currentThemeBadgeTop">រាជវាំងខ្មែរ</span>
+            <span class="theme-count-badge">35 ម៉ូដ</span>
+          </button>
+        </div>
+
+        <!-- Device View Mode Switcher (Desktop vs Mobile) -->
+        <div class="control-pill device-pill-prominent">
+          <span class="bar-label">
+            <span class="bar-icon">👁️</span>
+            <span>ទម្រង់មើល៖</span>
+          </span>
+          <div class="view-mode-switcher">
+            <button type="button" class="btn-view-mode active" data-mode="desktop" title="ទម្រង់លើកុំព្យូទ័រ / បញ្ចាំងអេក្រង់ធំ (Desktop View)">
+              <span class="btn-mode-icon">💻</span>
+              <span class="btn-mode-title">លើកុំព្យូទ័រ</span>
+            </button>
+            <button type="button" class="btn-view-mode" data-mode="mobile" title="ទម្រង់លើទូរស័ព្ទដៃ (Mobile View)">
+              <span class="btn-mode-icon">📱</span>
+              <span class="btn-mode-title">លើទូរស័ព្ទដៃ</span>
+            </button>
+            <button type="button" class="btn-view-mode" data-mode="auto" title="ស្វ័យប្រវត្តិតាមអេក្រង់ (Auto Responsive)">
+              <span class="btn-mode-icon">🔄</span>
+              <span class="btn-mode-title">ស្វ័យប្រវត្តិ</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="main-content">
+      <!-- Left / Top: Lucky Wheel Area -->
+      <section class="wheel-section" id="wheelSection">
+        <!-- Wheel Class Selection Bar (ជ្រើសរើសសិស្សតាមថ្នាក់ដើម្បីបង្វិល) -->
+        <div class="wheel-class-selector-card" id="wheelClassSelectorCard">
+          <div class="class-selector-header">
+            <span class="class-selector-title">
+              <span class="title-icon">🎯</span>
+              <strong>ជ្រើសរើសថ្នាក់ដើម្បីបង្វិល៖</strong>
+            </span>
+            <span class="active-count-indicator" id="activeStudentIndicator">សិស្ស 0 នាក់</span>
+          </div>
+          <!-- Clickable Class Pill Tabs -->
+          <div class="class-pills-container" id="classPillsContainer">
+            <!-- Dynamically populated by JS -->
+          </div>
+        </div>
+
+        <div class="wheel-outer-frame">
+          <!-- Traditional Golden Pointer (ទ្រនិចមាស) -->
+          <div class="pointer-wrapper" id="pointerWrapper">
+            <svg class="khmer-pointer" viewBox="0 0 60 70" width="60" height="70">
+              <defs>
+                <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#fff6cc"/>
+                  <stop offset="30%" stop-color="#ffd700"/>
+                  <stop offset="70%" stop-color="#d49b00"/>
+                  <stop offset="100%" stop-color="#8a5a00"/>
+                </linearGradient>
+                <filter id="goldShadow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.6"/>
+                </filter>
+              </defs>
+              <polygon points="30,66 6,10 54,10" fill="url(#goldGrad)" filter="url(#goldShadow)" stroke="#ffeaa7" stroke-width="2"/>
+              <circle cx="30" cy="18" r="7" fill="#ff2d55" stroke="#fff" stroke-width="2"/>
+              <circle cx="30" cy="18" r="2.5" fill="#fff"/>
+            </svg>
+          </div>
+
+          <!-- The Canvas Wheel -->
+          <div class="canvas-container">
+            <canvas id="wheelCanvas" width="560" height="560"></canvas>
+            
+            <!-- Wheel Center Golden Hub with Khmer Lotus -->
+            <div class="wheel-center-hub" id="centerSpinBtn" title="ចុចត្រង់នេះដើម្បីបង្វិល">
+              <div class="hub-ring"></div>
+              <div class="hub-lotus">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="url(#goldGrad)" style="display:block; margin:0 auto;">
+                  <path d="M12 2.5C11 5 8.5 8 5 9.5C7.5 11 10 13 12 16C14 13 16.5 11 19 9.5C15.5 8 13 5 12 2.5Z"/>
+                  <path d="M12 16C9.5 18 7 19.5 3 20C6.5 21.5 10 21.8 12 22C14 21.8 17.5 21.5 21 20C17 19.5 14.5 18 12 16Z" opacity="0.9"/>
+                  <circle cx="12" cy="11.5" r="2.2" fill="#ffffff"/>
+                </svg>
+              </div>
+              <span class="hub-label">បង្វិល</span>
+            </div>
+          </div>
+
+          <!-- Wheel Finished Overlay (When all students are drawn) -->
+          <div class="wheel-finished-overlay" id="wheelFinishedOverlay" style="display: none;">
+            <div class="finished-card">
+              <div class="finished-crown">👑</div>
+              <h3 class="finished-title">បានចាប់ឈ្មោះសិស្សអស់ហើយ!</h3>
+              <p class="finished-desc">សិស្សទាំងអស់ត្រូវបានចាប់រួចរាល់។ សូមចុចប៊ូតុងខាងក្រោមដើម្បីកំណត់ឡើងវិញ និងបង្វិលម្តងទៀត។</p>
+              <button type="button" class="btn btn-gold" id="btnFinishedReset">
+                <span class="btn-icon">🔄</span>
+                <span>កំណត់ឡើងវិញដើម្បីបង្វិលម្តងទៀត</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wheel Action Controls -->
+        <div class="wheel-controls">
+          <button id="spinBtn" class="btn btn-spin" aria-label="បង្វិលចាប់ឈ្មោះ">
+            <span class="btn-icon">⚡</span>
+            <span class="btn-text">បង្វិលឥឡូវនេះ</span>
+          </button>
+          <button id="shuffleBtn" class="btn btn-secondary" title="ច្របល់លំដាប់ឈ្មោះ">
+            <span class="btn-icon">🔀</span>
+            <span>ច្របល់ឈ្មោះ</span>
+          </button>
+          <button id="resetWheelBtn" class="btn btn-secondary btn-reset-wheel" title="កំណត់ឡើងវិញដើម្បីបង្វិលឈ្មោះសិស្សម្តងទៀត">
+            <span class="btn-icon">🔄</span>
+            <span>កំណត់ឡើងវិញ</span>
+          </button>
+          <button id="soundToggleBtn" class="btn btn-icon-only" title="បិទ/បើកសំឡេង">
+            <span id="soundIcon">🔊</span>
+          </button>
+          <button id="fullscreenBtn" class="btn btn-icon-only" title="ពង្រីកពេញអេក្រង់">
+            <span id="fullscreenIcon">⛶</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Right: Control Panels (Students & History) -->
+      <aside class="side-panel" id="sidePanel">
+        <!-- Mobile quick jump button to go back to wheel -->
+        <div class="mobile-jump-bar">
+          <button type="button" class="btn-jump-wheel" id="btnJumpWheel">
+            <span>🎯 ត្រឡប់ទៅបង្វិលកង</span>
+          </button>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="panel-tabs">
+          <button class="tab-btn active" data-tab="roster-tab">
+            <span>👥 បញ្ជីសិស្ស</span>
+            <span class="count-badge" id="studentCountBadge">0</span>
+          </button>
+          <button class="tab-btn" data-tab="history-tab">
+            <span>🏆 ប្រវត្តិឈ្នះ</span>
+            <span class="count-badge" id="historyCountBadge">0</span>
+          </button>
+          <button class="tab-btn" data-tab="settings-tab">
+            <span>⚙️ កំណត់</span>
+          </button>
+        </div>
+
+        <!-- Tab 1: Student Roster -->
+        <div class="tab-content active" id="roster-tab">
+          <!-- Add Name & Class Input -->
+          <form class="add-student-form" id="addStudentForm">
+            <div class="input-group">
+              <input type="text" id="newStudentInput" placeholder="ឈ្មោះសិស្ស..." autocomplete="off" maxlength="40" required>
+              <input type="text" id="newStudentClassInput" class="class-input" placeholder="ថ្នាក់ (ឧ. 12A)..." autocomplete="off" maxlength="20">
+              <button type="submit" class="btn btn-gold-sm" id="btnAddStudent">
+                <span>➕ បន្ថែម</span>
+              </button>
+            </div>
+          </form>
+
+          <!-- Action bar for quick actions -->
+          <div class="roster-actions">
+            <button id="btnExcelModal" class="btn-link text-excel">📊 នាំចូល Excel</button>
+            <button id="btnGoogleSheetModal" class="btn-link text-sheets">☁️ Google Sheets</button>
+            <button id="btnBulkModal" class="btn-link">📋 បញ្ចូលច្រើន</button>
+            <button id="btnResetRoster" class="btn-link text-gold" title="ស្ដារឈ្មោះសិស្សទាំងអស់មកវិញដើម្បីបង្វិលម្តងទៀត">🔄 កំណត់ឡើងវិញ</button>
+            <button id="btnClearAll" class="btn-link text-danger">🗑️ លុបទាំងអស់</button>
+          </div>
+
+          <!-- Restorable Students Notice Banner -->
+          <div class="roster-removed-notice" id="rosterRemovedNotice" style="display: none;">
+            <div class="removed-notice-content">
+              <span>💡 បានដកសិស្ស <strong id="removedStudentsCount">0</strong> នាក់ចេញពីកងវិល</span>
+              <button type="button" class="btn-restore-inline" id="btnRestoreInline">🔄 ស្ដារមកវិញ</button>
+            </div>
+          </div>
+
+          <!-- Cloud Sync Status Toast / Banner -->
+          <div class="cloud-sync-banner" id="cloudSyncBanner" style="display: none;">
+            <div class="sync-banner-content">
+              <span class="sync-spinner" id="syncBannerIcon">🔄</span>
+              <span id="syncBannerText">កំពុងទាញយកទិន្នន័យពី Google Sheets ដោយស្វ័យប្រវត្តិ...</span>
+            </div>
+          </div>
+
+          <!-- Dynamic Class Filter Selector -->
+          <div class="class-filter-bar" id="classFilterBar" style="display: none;">
+            <label for="classFilterSelect" class="filter-label">
+              <span>🎯 ថ្នាក់៖</span>
+            </label>
+            <select id="classFilterSelect" class="class-dropdown">
+              <option value="all">ទាំងអស់ (គ្រប់ថ្នាក់)</option>
+            </select>
+          </div>
+
+          <!-- Student List Scrollable -->
+          <div class="student-list-wrap">
+            <ul class="student-list" id="studentList">
+              <!-- Rendered via JS -->
+            </ul>
+          </div>
+        </div>
+
+        <!-- Tab 2: History Log -->
+        <div class="tab-content" id="history-tab">
+          <div class="history-actions">
+            <span class="history-title">កំណត់ត្រាអ្នកឈ្នះទាំងអស់</span>
+            <button id="btnClearHistory" class="btn-link text-danger">សម្អាតប្រវត្តិ</button>
+          </div>
+          <div class="history-list-wrap">
+            <ul class="history-list" id="historyList">
+              <li class="history-empty">មិនទាន់មានប្រវត្តិអ្នកឈ្នះនៅឡើយទេ</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Tab 3: Settings -->
+        <div class="tab-content" id="settings-tab">
+          <div class="settings-group">
+            <div class="setting-item-block">
+              <span class="setting-label">
+                <strong>🎨 រូបរាងប្រព័ន្ធ (System Theme - ៣៥ ម៉ូដ)</strong>
+                <small id="themeSettingDesc">ជ្រើសរើសរូបរាងពណ៌ ផ្ទៃ និងកងវិលចំនួន ៣៥ Styles</small>
+              </span>
+              <div class="theme-setting-action-row mt-2">
+                <div class="select-wrapper theme-select-wrapper">
+                  <select id="themeSelectDropdown" class="font-dropdown">
+                    <!-- Populated dynamically via JS -->
+                  </select>
+                </div>
+                <button type="button" class="btn btn-gold-sm" id="btnOpenThemeModalFromSettings" title="មើលរូបរាងទាំង ៣៥ ម៉ូដ">
+                  <span>🎨 រូបរាងទាំង 35</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="setting-item-block">
+              <span class="setting-label">
+                <strong>ពុម្ពអក្សរខ្មែរ (Khmer Font)</strong>
+                <small>ជ្រើសរើសពុម្ពអក្សរសម្រាប់កងវិល និងអក្សរទូទៅ</small>
+              </span>
+              <div class="select-wrapper mt-2">
+                <select id="fontSelectSetting" class="font-dropdown">
+                  <option value="Kantumruy Pro">កន្ទុំរុយ ប្រូ (Kantumruy Pro)</option>
+                  <option value="Battambang">បាត់ដំបង (Battambang)</option>
+                  <option value="Siemreap">សៀមរាប (Siemreap)</option>
+                  <option value="Moul">អក្សរមូល (Moul)</option>
+                  <option value="Hanuman">ហនុមាន (Hanuman)</option>
+                  <option value="Koulen">គូលែន (Koulen)</option>
+                  <option value="Bayon">បាយ័ន (Bayon)</option>
+                  <option value="Dangrek">ដងរែក (Dangrek)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="setting-item-block">
+              <span class="setting-label">
+                <strong>ទំហំអក្សរលើកងវិល (Wheel Font Scale)</strong>
+                <small id="fontSizeDisplay">មធ្យម (ធម្មតា)</small>
+              </span>
+              <div class="font-size-btns">
+                <button type="button" class="btn-size" data-size="sm">តូច</button>
+                <button type="button" class="btn-size active" data-size="md">មធ្យម</button>
+                <button type="button" class="btn-size" data-size="lg">ធំ</button>
+              </div>
+            </div>
+
+            <div class="setting-item-block">
+              <span class="setting-label">
+                <strong>ទម្រង់បង្ហាញអេក្រង់ (Display Mode)</strong>
+                <small id="viewModeDisplay">💻 កុំព្យូទ័រ (Desktop / Projector)</small>
+              </span>
+              <div class="view-mode-btns">
+                <button type="button" class="btn-mode-setting active" data-mode="desktop">💻 លើកុំព្យូទ័រ</button>
+                <button type="button" class="btn-mode-setting" data-mode="mobile">📱 លើទូរស័ព្ទដៃ</button>
+                <button type="button" class="btn-mode-setting" data-mode="auto">🔄 ស្វ័យប្រវត្តិ</button>
+              </div>
+            </div>
+
+            <label class="setting-item">
+              <span class="setting-label">
+                <strong>ដកឈ្មោះចេញស្វ័យប្រវត្តិ</strong>
+                <small>ដកឈ្មោះសិស្សចេញពីកង់វិល បន្ទាប់ពីចាប់ត្រូវ</small>
+              </span>
+              <input type="checkbox" id="autoRemoveToggle" class="custom-toggle">
+            </label>
+
+            <label class="setting-item">
+              <span class="setting-label">
+                <strong>រយៈពេលបង្វិល (Spin Duration)</strong>
+                <small id="durationDisplay">៦ វិនាទី</small>
+              </span>
+              <input type="range" id="spinDurationRange" min="3" max="10" value="6" step="1">
+            </label>
+
+            <label class="setting-item">
+              <span class="setting-label">
+                <strong>សំឡេងអម (Sound FX)</strong>
+                <small>សំឡេងគោះទ្រនិច និងតន្ត្រីជ័យជំនះ</small>
+              </span>
+              <input type="checkbox" id="soundSettingToggle" class="custom-toggle" checked>
+            </label>
+
+            <div class="setting-item-block">
+              <span class="setting-label">
+                <strong>☁️ ធ្វើសមកាលកម្ម Google Sheets (Cloud Sync)</strong>
+                <small>រក្សាទុកទិន្នន័យលើ Cloud ដើម្បីចែករំលែកជាមួយទូរស័ព្ទ និងឧបករណ៍ដទៃ</small>
+              </span>
+              <div class="cloud-sync-quick-bar mt-2">
+                <button type="button" class="btn btn-gold-sm" id="btnOpenSheetModalFromSetting">
+                  <span>☁️ បើកការកំណត់ Google Sheets</span>
+                </button>
+                <button type="button" class="btn btn-connect-action-sm" id="btnQuickConnectSettings" title="ភ្ជាប់ទៅកាន់ Google Apps Script របស់អ្នកភ្លាមៗ">
+                  <span>⚡ ភ្ជាប់ Web App</span>
+                </button>
+                <span class="cloud-status-badge" id="cloudStatusIndicatorSettings">⚪ មិនទាន់ភ្ជាប់</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Native Mobile Bottom Navigation Bar (របារបញ្ជាខាងក្រោមសម្រាប់ទូរស័ព្ទ) -->
+    <nav class="mobile-bottom-nav" id="mobileBottomNav">
+      <button type="button" class="mobile-nav-item active" data-nav="wheel" id="navWheel">
+        <span class="nav-icon">🎯</span>
+        <span class="nav-label">កងវិល</span>
+      </button>
+      <button type="button" class="mobile-nav-item" data-nav="roster" id="navRoster">
+        <span class="nav-icon">👥</span>
+        <span class="nav-label">សិស្ស</span>
+        <span class="mobile-nav-badge" id="mobileStudentBadge">0</span>
+      </button>
+      <button type="button" class="mobile-nav-item" data-nav="history" id="navHistory">
+        <span class="nav-icon">🏆</span>
+        <span class="nav-label">អ្នកឈ្នះ</span>
+      </button>
+      <button type="button" class="mobile-nav-item" data-nav="settings" id="navSettings">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">កំណត់</span>
+      </button>
+    </nav>
+
+    <!-- Mobile Home Indicator Bar for Phone Simulation -->
+    <div class="mobile-home-indicator"></div>
+  </div>
+
+  <!-- Winner Celebration Modal (ផ្ទាំងអបអរសាទរ) -->
+  <div class="winner-modal-overlay" id="winnerModalOverlay" role="dialog" aria-modal="true">
+    <!-- Confetti Canvas -->
+    <canvas id="confettiCanvas"></canvas>
+
+    <div class="winner-modal-card">
+      <!-- Ornate corner decors -->
+      <div class="card-kbach top-left"></div>
+      <div class="card-kbach top-right"></div>
+      <div class="card-kbach bottom-left"></div>
+      <div class="card-kbach bottom-right"></div>
+
+      <div class="winner-badge">
+        <span class="star-icon">★</span>
+        <span>សូមអបអរសាទរ</span>
+        <span class="star-icon">★</span>
+      </div>
+
+      <div class="crown-icon">👑</div>
+      <p class="winner-title-text" id="winnerTitleText">អ្នកឈ្នះគឺ</p>
+
+      <div class="winner-name-container">
+        <div class="winner-glow-ring"></div>
+        <h2 class="winner-name" id="winnerNameDisplay">-</h2>
+        <div class="winner-class-badge" id="winnerClassDisplay" style="display: none;"></div>
+        <div class="winner-voice-row">
+          <button type="button" class="btn-voice-replay" id="btnReplayVoice" title="ស្ដាប់សំឡេងប្រកាសឡើងវិញ" aria-label="ស្ដាប់សំឡេងប្រកាសឡើងវិញ">
+            🔊 <span>ស្ដាប់សំឡេងឡើងវិញ</span>
+          </button>
+        </div>
+      </div>
+
+      <p class="winner-meta" id="winnerMetaText"></p>
+
+      <div class="winner-modal-actions">
+        <button id="btnSpinAgain" class="btn btn-spin-again" title="បង្វិលចាប់ឈ្មោះសិស្សបន្ទាប់ភ្លាមៗ">
+          <span class="btn-icon">⚡</span>
+          <span>បង្វិលម្តងទៀត</span>
+        </button>
+        <button id="btnKeepWinner" class="btn btn-gold">
+          <span>✔️ រក្សាឈ្មោះទុក</span>
+        </button>
+        <button id="btnRemoveWinner" class="btn btn-danger-khmer">
+          <span>❌ ដកឈ្មោះចេញ</span>
+        </button>
+        <button id="btnCloseModal" class="btn btn-secondary">
+          <span>បិទផ្ទាំង</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk Import Modal (ផ្ទាំងបញ្ចូលឈ្មោះម្ដងច្រើន) -->
+  <div class="modal-overlay" id="bulkModalOverlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>📋 បញ្ចូលឈ្មោះសិស្សម្តងច្រើននាក់</h3>
+        <button class="modal-close" id="btnCancelBulk">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">សូមបញ្ចូល ឬចម្លងឈ្មោះសិស្សដាក់ក្នុងប្រអប់ខាងក្រោម (អាចសរសេរ <code>ឈ្មោះ, ថ្នាក់</code> ឬតែឈ្មោះសុទ្ធក៏បាន)៖</p>
+        <textarea id="bulkTextarea" rows="8" placeholder="សូមបញ្ចូលឈ្មោះសិស្សនៅទីនេះ (១ ជួរសម្រាប់សិស្សម្នាក់)..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnCloseBulk">បោះបង់</button>
+        <button class="btn btn-gold" id="btnSaveBulk">បញ្ចូលក្នុងបញ្ជី</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Student Modal (ផ្ទាំងកែប្រែឈ្មោះ និងថ្នាក់សិស្ស) -->
+  <div class="modal-overlay" id="editStudentModalOverlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>✏️ កែប្រែព័ត៌មានសិស្ស</h3>
+        <button class="modal-close" id="btnCancelEditStudent">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editStudentOriginalName">
+        <input type="hidden" id="editStudentOriginalClass">
+        <div style="margin-bottom: 14px;">
+          <label for="editStudentNameInput" style="display:block; margin-bottom:6px; color:var(--gold-200); font-weight:600; font-size:0.92rem;">
+            👤 ឈ្មោះសិស្ស៖
+          </label>
+          <input type="text" id="editStudentNameInput" placeholder="បញ្ចូលឈ្មោះសិស្ស..." autocomplete="off" maxlength="40" style="width:100%; background:rgba(0,0,0,0.4); border:1px solid rgba(255,215,77,0.3); border-radius:var(--radius-sm); padding:0.65rem 0.9rem; color:#fff; font-family:var(--font-body); font-size:0.95rem;">
+        </div>
+        <div>
+          <label for="editStudentClassInput" style="display:block; margin-bottom:6px; color:var(--gold-200); font-weight:600; font-size:0.92rem;">
+            🏫 ថ្នាក់ (ឧ. 12A, 10B)៖
+          </label>
+          <input type="text" id="editStudentClassInput" placeholder="បញ្ចូលថ្នាក់ (មិនបាច់ដាក់ក៏បាន)..." autocomplete="off" maxlength="20" style="width:100%; background:rgba(0,0,0,0.4); border:1px solid rgba(255,215,77,0.3); border-radius:var(--radius-sm); padding:0.65rem 0.9rem; color:#fff; font-family:var(--font-body); font-size:0.95rem;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnCloseEditStudent">បោះបង់</button>
+        <button class="btn btn-gold" id="btnSaveEditStudent">💾 រក្សាទុកការកែប្រែ</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Excel Import Modal (ផ្ទាំងនាំចូលទិន្នន័យពី Excel) -->
+  <div class="modal-overlay" id="excelModalOverlay">
+    <div class="modal-box modal-box-lg">
+      <div class="modal-header">
+        <h3>📊 នាំចូលទិន្នន័យសិស្សពី Excel (.xlsx, .xls, .csv)</h3>
+        <button class="modal-close" id="btnCancelExcel">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="excel-header-actions">
+          <p class="modal-desc">សូមជ្រើសរើសឯកសារ Excel ដែលមានឈ្មោះសិស្ស និងថ្នាក់៖</p>
+          <button type="button" class="btn-link text-gold" id="btnDownloadSampleExcel">
+            📥 ទាញយកឯកសារគំរូ Excel
+          </button>
+        </div>
+
+        <!-- Dropzone -->
+        <div class="excel-dropzone" id="excelDropzone">
+          <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" style="display: none;">
+          <div class="dropzone-content">
+            <span class="dropzone-icon">📁</span>
+            <strong>ចុចត្រង់នេះ ឬទាញទម្លាក់ឯកសារ Excel ទីនេះ</strong>
+            <small>គាំទ្រឯកសារ .xlsx, .xls, .csv</small>
+          </div>
+        </div>
+
+        <!-- Excel Preview & Mapping Area -->
+        <div class="excel-preview-section" id="excelPreviewSection" style="display: none;">
+          <div class="excel-file-info" id="excelFileInfo"></div>
+
+          <div class="column-mapping-grid">
+            <div class="mapping-item">
+              <label for="colNameSelect">📌 ជួរឈរឈ្មោះសិស្ស (Name Column)៖</label>
+              <select id="colNameSelect" class="font-dropdown"></select>
+            </div>
+            <div class="mapping-item">
+              <label for="colClassSelect">🏫 ជួរឈរថ្នាក់ (Class Column)៖</label>
+              <select id="colClassSelect" class="font-dropdown"></select>
+            </div>
+          </div>
+
+          <div class="import-mode-options">
+            <label class="radio-label">
+              <input type="radio" name="importMode" value="append" checked>
+              <span>បន្ថែមពីលើបញ្ជីចាស់ (Append)</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="importMode" value="replace">
+              <span>ជំនួសបញ្ជីចាស់ទាំងអស់ (Replace)</span>
+            </label>
+          </div>
+
+          <div class="excel-table-preview-wrap">
+            <table class="excel-table-preview" id="excelTablePreview">
+              <thead id="excelTableHead"></thead>
+              <tbody id="excelTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnCloseExcel">បោះបង់</button>
+        <button class="btn btn-gold" id="btnConfirmImportExcel" disabled>
+          <span>📥 យល់ព្រមនាំចូល</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Google Sheets Cloud Sync Modal (ផ្ទាំងធ្វើសមកាលកម្ម Google Sheets) -->
+  <div class="modal-overlay" id="googleSheetModalOverlay">
+    <div class="modal-box modal-box-lg">
+      <div class="modal-header">
+        <h3>☁️ ធ្វើសមកាលកម្មទិន្នន័យជាមួយ Google Sheets</h3>
+        <button class="modal-close" id="btnCancelSheetModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">
+          រក្សាទុក និងទាញយកទិន្នន័យសិស្សពី Google Sheets ដើម្បីឱ្យទូរស័ព្ទដៃ ឬកុំព្យូទ័រដទៃទៀតអាចប្រើប្រាស់ និងបង្វិលកងរួមគ្នាបានគ្រប់ទីកន្លែង។
+        </p>
+
+        <!-- Status Card -->
+        <div class="sheet-status-card" id="sheetStatusCard">
+          <div class="sheet-status-info">
+            <span class="sheet-status-dot" id="sheetStatusDot">⚪</span>
+            <div>
+              <strong id="sheetStatusText">មិនទាន់បានភ្ជាប់ជាមួយ Google Sheet ឡើយ</strong>
+              <small id="sheetStatusSub" style="display:block; color:var(--text-dim); margin-top:2px;">សូមបិទភ្ជាប់ Google Web App URL ខាងក្រោមដើម្បីចាប់ផ្តើម</small>
+            </div>
+          </div>
+          <span class="sheet-last-sync" id="sheetLastSyncText">-</span>
+        </div>
+
+        <!-- URL Configuration -->
+        <div class="sheet-config-block">
+          <label for="googleSheetUrlInput" class="config-label">
+            <strong>🔗 Google Apps Script Web App URL៖</strong>
+          </label>
+          <div class="input-action-row">
+            <input type="url" id="googleSheetUrlInput" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off" spellcheck="false" value="https://script.google.com/macros/s/AKfycbxh9oWB7OVGVGqb6O8d1Q_g1XCenXyyuEzY-V0ZPCcXWiYRK6_Vq2hdTvRSuQYTXB8_FQ/exec">
+            <button type="button" class="btn btn-gold-sm" id="btnSaveSheetUrl" title="រក្សាទុក URL នេះ">
+              <span>💾 រក្សាទុក</span>
+            </button>
+            <button type="button" class="btn btn-connect-action" id="btnPasteAndConnect" title="បិទភ្ជាប់ពី Clipboard និងភ្ជាប់ភ្លាមៗ">
+              <span>📋 បិទភ្ជាប់ & ភ្ជាប់</span>
+            </button>
+            <button type="button" class="btn btn-copy-url" id="btnCopyWebAppUrl" title="ចម្លង URL នេះទៅកាន់ Clipboard">
+              <span>📋 ចម្លង</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Preset Quick Connect Card -->
+        <div class="preset-url-card" id="presetUrlCard">
+          <div class="preset-card-header">
+            <span class="preset-badge">⚡ Web App របស់អ្នក</span>
+            <span class="preset-title">Google Apps Script ដែលបានភ្ជាប់ស្រាប់</span>
+          </div>
+          <div class="preset-url-display">
+            <code id="presetUrlText">https://script.google.com/macros/s/AKfycbxh9oWB7OVGVGqb6O8d1Q_g1XCenXyyuEzY-V0ZPCcXWiYRK6_Vq2hdTvRSuQYTXB8_FQ/exec</code>
+          </div>
+          <div class="preset-actions-row">
+            <button type="button" class="btn btn-gold-sm" id="btnConnectPresetUrl">
+              <span>⚡ ភ្ជាប់ Web App នេះភ្លាម</span>
+            </button>
+            <button type="button" class="btn btn-outline-sm" id="btnCopyPresetUrl">
+              <span>📋 ចម្លង URL</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Sync Action Controls -->
+        <div class="sheet-actions-grid">
+          <button type="button" class="sheet-action-card" id="btnPushToSheet">
+            <span class="action-card-icon">📤</span>
+            <strong>បញ្ជូនទៅ Sheet</strong>
+            <small>រក្សាទុកសិស្ស និងប្រវត្តិឡើងទៅ Cloud</small>
+          </button>
+          <button type="button" class="sheet-action-card" id="btnPullFromSheet">
+            <span class="action-card-icon">📥</span>
+            <strong>ទាញយកពី Sheet</strong>
+            <small>ផ្ទុកសិស្ស និងថ្នាក់មកលើឧបករណ៍នេះ</small>
+          </button>
+          <button type="button" class="sheet-action-card" id="btnCopyShareLink">
+            <span class="action-card-icon">🔗</span>
+            <strong>ចម្លង Link ចែករំលែក</strong>
+            <small>ផ្ញើ Link ទៅទូរស័ព្ទឱ្យបើកភ្លាមៗ</small>
+          </button>
+          <button type="button" class="sheet-action-card" id="btnToggleScriptGuide">
+            <span class="action-card-icon">📜</span>
+            <strong>កូដ Apps Script</strong>
+            <small>មើល និងចម្លងកូដ Web App (Code.gs)</small>
+          </button>
+        </div>
+
+        <!-- Collapsible Apps Script Code & Setup Guide -->
+        <div class="script-guide-box" id="scriptGuideBox" style="display: none;">
+          <div class="guide-header">
+            <strong>🛠️ របៀបបង្កើត Google Apps Script Web App (៥ ជំហាន)៖</strong>
+            <button type="button" class="btn btn-gold-sm" id="btnCopyAppsScriptCode">
+              <span>📋 ចម្លងកូដ Apps Script</span>
+            </button>
+          </div>
+          <ol class="guide-steps">
+            <li>បើកសន្លឹកកិច្ចការ Google Sheet ថ្មីមួយនៅ <a href="https://sheets.new" target="_blank" rel="noopener noreferrer" style="color:var(--gold-300);">sheets.new</a></li>
+            <li>ចូលម៉ឺនុយ <strong>Extensions (ផ្នែកបន្ថែម) > Apps Script</strong></li>
+            <li>លុបកូដចាស់ចេញ រួច Paste កូដខាងក្រោមនេះចូល</li>
+            <li>ចុច <strong>Deploy > New deployment</strong> រួចជ្រើសរើសប្រភេទ <strong>Web app</strong> (កំណត់ <em>Execute as: Me</em> និង <em>Who has access: Anyone</em>)</li>
+            <li>ចុច <strong>Deploy</strong> រួចចម្លង Web App URL យកមកបិទភ្ជាប់ក្នុងប្រអប់ខាងលើ ជាការស្រេច!</li>
+          </ol>
+          <div class="code-preview-wrap">
+            <pre class="code-preview" id="appsScriptCodePreview"></pre>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnCloseSheetModal">បិទ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset Wheel Confirmation Modal (ផ្ទាំងកំណត់ឡើងវិញ) -->
+  <div class="modal-overlay" id="resetModalOverlay">
+    <div class="modal-box modal-box-reset">
+      <div class="modal-header">
+        <h3>🔄 កំណត់ឡើងវិញដើម្បីបង្វិលឈ្មោះសិស្សម្តងទៀត</h3>
+        <button class="modal-close" id="btnCancelResetModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">
+          សូមជ្រើសរើសជម្រើសខាងក្រោមដើម្បីរៀបចំការបង្វិលឈ្មោះសិស្សម្តងទៀត៖
+        </p>
+        <div class="reset-options-list">
+          <button type="button" class="reset-option-card" id="btnOptRestoreAll">
+            <div class="reset-option-icon">👥</div>
+            <div class="reset-option-info">
+              <strong>ស្ដារឈ្មោះសិស្សទាំងអស់មកវិញ (បង្វិលជុំថ្មី)</strong>
+              <small>ដាក់ឈ្មោះសិស្សទាំងអស់ដែលបានដកចេញ ឱ្យចូលមកក្នុងកងវិលវិញទាំងអស់</small>
+            </div>
+            <span class="reset-option-badge" id="resetRestoreBadge">ស្ដារ</span>
+          </button>
+
+          <button type="button" class="reset-option-card" id="btnOptFreshStart">
+            <div class="reset-option-icon">✨</div>
+            <div class="reset-option-info">
+              <strong>ចាប់ផ្ដើមជុំថ្មីទាំងស្រុង (Fresh Start)</strong>
+              <small>ស្ដារឈ្មោះសិស្សទាំងអស់មកវិញ និងសម្អាតប្រវត្តិអ្នកឈ្នះទាំងអស់ (ជុំទី ១ ឡើងវិញ)</small>
+            </div>
+            <span class="reset-option-badge">ជុំថ្មី</span>
+          </button>
+
+          <button type="button" class="reset-option-card" id="btnOptResetAngle">
+            <div class="reset-option-icon">🎯</div>
+            <div class="reset-option-info">
+              <strong>កំណត់ទ្រនិចកងវិលទៅចំណុចដើម</strong>
+              <small>បង្វិលកងវិលត្រឡប់ទៅទីតាំងដើម (០ ដឺក្រេ) ដោយមិនប៉ះពាល់បញ្ជីឈ្មោះ</small>
+            </div>
+            <span class="reset-option-badge">ទ្រនិច</span>
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnCloseResetModal">បោះបង់</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Theme Picker Modal (ផ្ទាំងជ្រើសរើសរូបរាងប្រព័ន្ធ ៣៥ ម៉ូដ) -->
+  <div class="modal-overlay" id="themeModalOverlay" role="dialog" aria-modal="true">
+    <div class="modal-box modal-box-theme">
+      <div class="modal-header">
+        <div class="theme-modal-title-wrap">
+          <h3>🎨 ជ្រើសរើសរូបរាងប្រព័ន្ធ (៣៥ ម៉ូដ)</h3>
+          <span class="theme-active-tag" id="themeActiveHeaderBadge">កំពុងប្រើ៖ រាជវាំងខ្មែរ</span>
+        </div>
+        <button class="modal-close" id="btnCloseThemeModal">✕</button>
+      </div>
+      <div class="modal-body theme-modal-body">
+        <!-- Search & Filter Controls -->
+        <div class="theme-filter-bar">
+          <div class="theme-search-box">
+            <span class="theme-search-icon">🔍</span>
+            <input type="text" id="themeSearchInput" placeholder="ស្វែងរកឈ្មោះរូបរាង (ឧ. អង្គរ, មរកត, នីអុង, សាគូរ៉ា)..." autocomplete="off">
+            <button type="button" class="btn-clear-search" id="btnClearThemeSearch" style="display: none;">✕</button>
+          </div>
+          <div class="theme-category-pills" id="themeCategoryPills">
+            <button type="button" class="theme-cat-btn active" data-cat="all">ទាំងអស់ (35)</button>
+            <button type="button" class="theme-cat-btn" data-cat="khmer">🇰🇭 វប្បធម៌ខ្មែរ (6)</button>
+            <button type="button" class="theme-cat-btn" data-cat="nature">🌿 ធម្មជាតិ (6)</button>
+            <button type="button" class="theme-cat-btn" data-cat="gems">💎 ត្បូង &amp; ភោគផល (5)</button>
+            <button type="button" class="theme-cat-btn" data-cat="cosmic">🌌 រាត្រី &amp; លំហ (6)</button>
+            <button type="button" class="theme-cat-btn" data-cat="neon">⚡ នីអុង &amp; ស៊ីប៊ើ (6)</button>
+            <button type="button" class="theme-cat-btn" data-cat="pastel">🌸 ស្រទន់ &amp; Zen (6)</button>
+          </div>
+        </div>
+
+        <!-- Themes Grid Container -->
+        <div class="theme-cards-grid" id="themeCardsGrid">
+          <!-- 35 Theme Cards dynamically rendered by JS -->
+        </div>
+      </div>
+      <div class="modal-footer theme-modal-footer">
+        <span class="theme-count-footer-info" id="themeFooterCount">បង្ហាញ 35 នៃ 35 រូបរាង</span>
+        <button class="btn btn-secondary" id="btnCancelThemeModal">បិទ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification System -->
+  <div class="toast-notification" id="toastNotification" style="display: none;">
+    <span class="toast-icon" id="toastIcon">✨</span>
+    <span class="toast-message" id="toastMessage"></span>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
